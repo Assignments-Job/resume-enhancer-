@@ -1,6 +1,9 @@
 import axios from 'axios';
 
-const API_BASE_URL = 'http://localhost:8000';
+// Get API URL from environment variables
+const API_BASE_URL = import.meta.env.VITE_API_URL;
+
+console.log('API Base URL:', API_BASE_URL); // Debug log
 
 const api = axios.create({
   baseURL: API_BASE_URL,
@@ -8,6 +11,30 @@ const api = axios.create({
     'Content-Type': 'application/json',
   },
 });
+
+// Add request interceptor for debugging
+api.interceptors.request.use(
+  (config) => {
+    console.log('Making API request to:', config.baseURL + config.url);
+    return config;
+  },
+  (error) => {
+    console.error('API request error:', error);
+    return Promise.reject(error);
+  }
+);
+
+// Add response interceptor for debugging
+api.interceptors.response.use(
+  (response) => {
+    console.log('API response received:', response.status);
+    return response;
+  },
+  (error) => {
+    console.error('API response error:', error.response?.status, error.message);
+    return Promise.reject(error);
+  }
+);
 
 export const enhanceSection = async (section, content) => {
   try {
