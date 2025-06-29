@@ -11,10 +11,15 @@ from pydantic import BaseModel
 
 app = FastAPI(title="Resume Editor API", version="1.0.0")
 
+# Get CORS origins from environment variable
+cors_origins = os.getenv(
+    "CORS_ORIGINS", "http://localhost:5173,http://localhost:3000"
+).split(",")
+
 # Enable CORS for frontend communication
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:5173", "http://localhost:3000"],
+    allow_origins=cors_origins,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -201,7 +206,7 @@ async def save_resume(resume_data: Dict[str, Any]):
         # Save to in-memory storage
         saved_resumes.append(resume_with_timestamp)
 
-        # Optionally save to local file
+        # Optionally save to local file (Note: This won't work on Vercel serverless)
         try:
             os.makedirs("saved_resumes", exist_ok=True)
             filename = f"saved_resumes/resume_{resume_with_timestamp['id']}.json"
