@@ -12,7 +12,9 @@ from pydantic import BaseModel
 app = FastAPI(title="Resume Editor API", version="1.0.0")
 
 # Get CORS origins from environment variable
-cors_origins = os.getenv("CORS_ORIGINS").split(",")
+cors_origins = os.getenv(
+    "CORS_ORIGINS", "http://localhost:5173,http://localhost:3000"
+).split(",")
 
 # Enable CORS for frontend communication
 app.add_middleware(
